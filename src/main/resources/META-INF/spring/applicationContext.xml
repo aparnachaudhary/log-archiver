@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	xmlns:file="http://www.springframework.org/schema/integration/file"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd
+			http://www.springframework.org/schema/integration/file
+			http://www.springframework.org/schema/integration/file/spring-integration-file.xsd">
+        
+	<context:component-scan base-package="net.arunoday.logstore" />
+
+	<file:inbound-channel-adapter id="filesIn"
+		directory="file:data" prevent-duplicates="true" auto-startup="true"
+		channel="fileChannel" filename-pattern="logfile.log">
+		<integration:poller fixed-rate="10" />
+	</file:inbound-channel-adapter>
+
+	<integration:channel id="dataChannel">
+		<integration:interceptors>
+			<integration:wire-tap channel="logger" />
+		</integration:interceptors>
+	</integration:channel>
+
+	<integration:service-activator input-channel="fileChannel" output-channel="logger">
+		<bean class="net.arunoday.logstore.LogProcessor" />
+	</integration:service-activator>
+
+	<!-- 
+	<integration:service-activator input-channel="dataChannel" requires-reply="false" output-channel="logger" >
+		<bean class="net.arunoday.logstore.JSONProcessor" />
+	</integration:service-activator>
+ 	-->
+
+	<integration:logging-channel-adapter id="logger"
+		level="DEBUG" log-full-message="true" />
+
+	<!-- ===================================================== -->
+	<!-- MONGODB SETUP -->
+	<!-- Default bean name is 'mongo' -->
+	<!-- ===================================================== -->
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongo" ref="mongo" />
+		<constructor-arg name="databaseName" value="test" />
+	</bean>
+
+
+	<!-- Factory bean that creates the Mongo instance -->
+	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+		<property name="host" value="127.0.0.1" />
+		<property name="port" value="27017" />
+	</bean>
+	
+	<!-- Use this post processor to translate any MongoExceptions thrown in 
+		@Repository annotated classes -->
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+
+</beans>
