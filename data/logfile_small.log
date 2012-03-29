@@ -1,0 +1,4 @@
+2012-01-19 13:38:37,939 INFO  [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@910040: startup date [Thu Jan 19 13:38:37 CET 2012]; root of context hierarchy
+2012-01-19 13:38:38,221 INFO  [main] Loading XML bean definitions from class path resource [META-INF/spring/app-context.xml]
+2012-01-19 13:38:39,799 INFO  [main] No bean named 'errorChannel' has been explicitly defined. Therefore, a default PublishSubscribeChannel will be created.
+2012-01-19 13:38:39,799 INFO  [main] No bean named 'taskScheduler' has been explicitly defined. Therefore, a default ThreadPoolTaskScheduler will be created.

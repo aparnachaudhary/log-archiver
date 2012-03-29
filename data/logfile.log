@@ -1,0 +1,84 @@
+2012-01-19 13:38:37,939 INFO  [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@910040: startup date [Thu Jan 19 13:38:37 CET 2012]; root of context hierarchy
+2012-01-19 13:38:38,221 INFO  [main] Loading XML bean definitions from class path resource [META-INF/spring/app-context.xml]
+2012-01-19 13:38:39,799 INFO  [main] No bean named 'errorChannel' has been explicitly defined. Therefore, a default PublishSubscribeChannel will be created.
+2012-01-19 13:38:39,799 INFO  [main] No bean named 'taskScheduler' has been explicitly defined. Therefore, a default ThreadPoolTaskScheduler will be created.
+2012-01-19 13:38:40,190 INFO  [main] Bean 'mongo' of type [class org.springframework.data.mongodb.core.MongoFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2012-01-19 13:38:40,252 INFO  [main] Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@16614e7: defining beans [JSONProcessor,logProcessor,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.integration.internalDefaultConfiguringBeanFactoryPostProcessor,org.springframework.integration.file.config.FileListFilterFactoryBean#0,org.springframework.integration.file.config.FileReadingMessageSourceFactoryBean#0,org.springframework.scheduling.support.PeriodicTrigger#0,filesIn,org.springframework.integration.channel.interceptor.WireTap#0,dataChannel,org.springframework.integration.config.ServiceActivatorFactoryBean#0,fileChannel,org.springframework.integration.config.ConsumerEndpointFactoryBean#0,org.springframework.integration.config.ServiceActivatorFactoryBean#1,org.springframework.integration.config.ConsumerEndpointFactoryBean#1,logger,org.springframework.integration.handler.LoggingHandler#0,logger.adapter,mongoTemplate,mongo,org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor#0,nullChannel,errorChannel,_org.springframework.integration.errorLogger,taskScheduler,org.springframework.integration.config.IdGeneratorConfigurer#0]; root of factory hierarchy
+2012-01-19 13:38:41,471 INFO  [main] Initializing ExecutorService  'taskScheduler'
+2012-01-19 13:38:41,502 INFO  [main] Starting beans in phase -2147483648
+2012-01-19 13:38:41,502 INFO  [main] Adding {service-activator} as a subscriber to the 'fileChannel' channel
+2012-01-19 13:38:41,502 INFO  [main] Channel 'fileChannel' has 1 subscriber(s).
+2012-01-19 13:38:41,502 INFO  [main] started org.springframework.integration.config.ConsumerEndpointFactoryBean#0
+2012-01-19 13:38:41,502 INFO  [main] Adding {service-activator} as a subscriber to the 'dataChannel' channel
+2012-01-19 13:38:41,502 INFO  [main] Channel 'dataChannel' has 1 subscriber(s).
+2012-01-19 13:38:41,502 INFO  [main] started org.springframework.integration.config.ConsumerEndpointFactoryBean#1
+2012-01-19 13:38:41,518 INFO  [main] Adding {logging-channel-adapter:logger.adapter} as a subscriber to the 'logger' channel
+2012-01-19 13:38:41,518 INFO  [main] Channel 'logger' has 1 subscriber(s).
+2012-01-19 13:38:41,518 INFO  [main] started logger.adapter
+2012-01-19 13:38:41,518 INFO  [main] Adding {logging-channel-adapter:_org.springframework.integration.errorLogger} as a subscriber to the 'errorChannel' channel
+2012-01-19 13:38:41,518 INFO  [main] Channel 'errorChannel' has 1 subscriber(s).
+2012-01-19 13:38:41,518 INFO  [main] started _org.springframework.integration.errorLogger
+2012-01-19 13:38:41,518 INFO  [main] Starting beans in phase 2147483647
+2012-01-19 13:38:41,534 INFO  [main] started filesIn
+2012-01-19 13:38:43,831 ERROR [task-scheduler-1] org.springframework.integration.MessageHandlingException: com.mongodb.MongoException$Network: can't call something : /127.0.0.1:27017/test
+	at org.springframework.integration.handler.MethodInvokingMessageProcessor.processMessage(MethodInvokingMessageProcessor.java:76)
+	at org.springframework.integration.handler.ServiceActivatingHandler.handleRequestMessage(ServiceActivatingHandler.java:64)
+	at org.springframework.integration.handler.AbstractReplyProducingMessageHandler.handleMessageInternal(AbstractReplyProducingMessageHandler.java:97)
+	at org.springframework.integration.handler.AbstractMessageHandler.handleMessage(AbstractMessageHandler.java:73)
+	at org.springframework.integration.dispatcher.UnicastingDispatcher.doDispatch(UnicastingDispatcher.java:114)
+	at org.springframework.integration.dispatcher.UnicastingDispatcher.dispatch(UnicastingDispatcher.java:101)
+	at org.springframework.integration.channel.AbstractSubscribableChannel.doSend(AbstractSubscribableChannel.java:61)
+	at org.springframework.integration.channel.AbstractMessageChannel.send(AbstractMessageChannel.java:157)
+	at org.springframework.integration.channel.AbstractMessageChannel.send(AbstractMessageChannel.java:128)
+	at org.springframework.integration.core.MessagingTemplate.doSend(MessagingTemplate.java:288)
+	at org.springframework.integration.core.MessagingTemplate.send(MessagingTemplate.java:149)
+	at org.springframework.integration.endpoint.SourcePollingChannelAdapter.doPoll(SourcePollingChannelAdapter.java:97)
+	at org.springframework.integration.endpoint.AbstractPollingEndpoint$1.call(AbstractPollingEndpoint.java:146)
+	at org.springframework.integration.endpoint.AbstractPollingEndpoint$1.call(AbstractPollingEndpoint.java:144)
+	at org.springframework.integration.endpoint.AbstractPollingEndpoint$Poller$1.run(AbstractPollingEndpoint.java:207)
+	at org.springframework.integration.util.ErrorHandlingTaskExecutor$1.run(ErrorHandlingTaskExecutor.java:52)
+	at org.springframework.core.task.SyncTaskExecutor.execute(SyncTaskExecutor.java:48)
+	at org.springframework.integration.util.ErrorHandlingTaskExecutor.execute(ErrorHandlingTaskExecutor.java:49)
+	at org.springframework.integration.endpoint.AbstractPollingEndpoint$Poller.run(AbstractPollingEndpoint.java:202)
+	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:51)
+	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:81)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:441)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:98)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:206)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:662)
+Caused by: com.mongodb.MongoException$Network: can't call something : /127.0.0.1:27017/test
+	at com.mongodb.DBTCPConnector.call(DBTCPConnector.java:227)
+	at com.mongodb.DBApiLayer$MyCollection.__find(DBApiLayer.java:305)
+	at com.mongodb.DB.command(DB.java:160)
+	at com.mongodb.DB.command(DB.java:183)
+	at com.mongodb.DBCollection.getCount(DBCollection.java:852)
+	at com.mongodb.DBCollection.getCount(DBCollection.java:823)
+	at com.mongodb.DBCollection.count(DBCollection.java:778)
+	at com.mongodb.gridfs.GridFS.<init>(GridFS.java:85)
+	at com.mongodb.gridfs.GridFS.<init>(GridFS.java:67)
+	at net.arunoday.logstore.LogProcessor.process(LogProcessor.java:36)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.springframework.expression.spel.support.ReflectiveMethodExecutor.execute(ReflectiveMethodExecutor.java:69)
+	at org.springframework.expression.spel.ast.MethodReference.getValueInternal(MethodReference.java:110)
+	at org.springframework.expression.spel.ast.CompoundExpression.getValueInternal(CompoundExpression.java:57)
+	at org.springframework.expression.spel.ast.SpelNodeImpl.getTypedValue(SpelNodeImpl.java:102)
+	at org.springframework.expression.spel.standard.SpelExpression.getValue(SpelExpression.java:102)
+	at org.springframework.integration.util.AbstractExpressionEvaluator.evaluateExpression(AbstractExpressionEvaluator.java:126)
+	at org.springframework.integration.util.MessagingMethodInvokerHelper.processInternal(MessagingMethodInvokerHelper.java:225)
+	at org.springframework.integration.util.MessagingMethodInvokerHelper.process(MessagingMethodInvokerHelper.java:125)
+	at org.springframework.integration.handler.MethodInvokingMessageProcessor.processMessage(MethodInvokingMessageProcessor.java:73)
+	... 28 more
+Caused by: java.io.IOException: couldn't connect to [/127.0.0.1:27017] bc:java.net.ConnectException: Connection refused: connect
+	at com.mongodb.DBPort._open(DBPort.java:228)
+	at com.mongodb.DBPort.go(DBPort.java:112)
+	at com.mongodb.DBPort.call(DBPort.java:79)
+	at com.mongodb.DBTCPConnector.call(DBTCPConnector.java:218)
+	... 50 more
+2012-01-19 13:38:43,831 INFO  [task-scheduler-1] Created message: [[Payload=data\test.log][Headers={timestamp=1326976723831, id=5d325386-8e9e-41f0-8765-e8efe34c55cb}]]

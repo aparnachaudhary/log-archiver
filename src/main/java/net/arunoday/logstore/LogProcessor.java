@@ -5,18 +5,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import net.arunoday.logview.LogRecord;
+import net.arunoday.logview.LogRecordCollector;
+import net.arunoday.logview.importer.LogImporterUsingParser;
+import net.arunoday.logview.parser.ParsingContext;
+import net.arunoday.logview.parser.log4j.Log4jPatternMultilineLogParser;
+import net.arunoday.logview.reader.ProxyLogDataCollector;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
-
-import pl.otros.logview.LogData;
-import pl.otros.logview.LogDataCollector;
-import pl.otros.logview.importer.LogImporterUsingParser;
-import pl.otros.logview.parser.ParsingContext;
-import pl.otros.logview.parser.log4j.Log4jPatternMultilineLogParser;
-import pl.otros.logview.reader.ProxyLogDataCollector;
-
-import com.mongodb.Mongo;
 
 /**
  * @author aparnachaudhary
@@ -25,10 +22,7 @@ import com.mongodb.Mongo;
 public class LogProcessor {
 
 	@Autowired
-	Mongo mongo;
-
-	@Autowired
-	MongoTemplate mongoTemplate;
+	LogRecordRepository logRecordRepository;
 
 	public static final String PROPERTY_NAME = "name";
 	public static final String PROPERTY_PATTERN = "pattern";
@@ -59,20 +53,21 @@ public class LogProcessor {
 
 			Log4jPatternMultilineLogParser parser = new Log4jPatternMultilineLogParser();
 
-			LogDataCollector collector = new ProxyLogDataCollector();
+			LogRecordCollector collector = new ProxyLogDataCollector();
 			ParsingContext context = new ParsingContext();
 			LogImporterUsingParser importerUsingParser = new LogImporterUsingParser(
 					parser);
 			importerUsingParser.init(p);
 			importerUsingParser.initParsingContext(context);
 			importerUsingParser.importLogs(in, collector, context);
-			LogData[] logDatas = collector.getLogData();
-			System.out.println("Have: " + logDatas.length);
-			for (LogData logData : logDatas) {
-				System.out.println("logData: " + logData.getId() + "|"
-						+ logData.getThread() + "|" + logData.getDate() + "|"
-						+ logData.getLevel() + "|\"" + logData.getMessage()
+			LogRecord[] logDatas = collector.getLogRecords();
+			System.err.println("Have: " + logDatas.length);
+			for (LogRecord record : logDatas) {
+				System.err.println("logData: " + record.getId() + "|"
+						+ record.getThread() + "|" + record.getDate() + "|"
+						+ record.getLevel() + "|\"" + record.getMessage()
 						+ "\"");
+				logRecordRepository.run(record);
 			}
 
 		} catch (Exception e) {
