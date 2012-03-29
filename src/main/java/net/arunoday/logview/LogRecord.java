@@ -11,13 +11,12 @@ import net.arunoday.logview.util.MapCompare;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Document
-public class LogRecord  {
+public class LogRecord {
 
 	@Id
 	private String uuid;
-	
+
 	private int id;
 	private Date date = new Date();
 	private Level level = Level.INFO;
@@ -31,19 +30,9 @@ public class LogRecord  {
 	private String loggerName = "";
 	private String message = "";
 	private Map<String, String> properties;
-	private Note note;
 	private boolean marked;
 	private String logSource;
 
-	
-	public String getUUId() {
-		return uuid;
-	}
-
-	public void setUUId(String uuid) {
-		this.uuid = uuid;
-	}
-	
 	public Date getDate() {
 		return date;
 	}
@@ -179,8 +168,6 @@ public class LogRecord  {
 			return false;
 		if (ndc != null ? !ndc.equals(logData.ndc) : logData.ndc != null)
 			return false;
-		if (note != null ? !note.equals(logData.note) : logData.note != null)
-			return false;
 		if (!MapCompare.areMapsEquals(properties, logData.properties))
 			return false;
 		if (thread != null ? !thread.equals(logData.thread)
@@ -205,7 +192,6 @@ public class LogRecord  {
 		result = 31 * result + (message != null ? message.hashCode() : 0);
 		result = 31 * result + id;
 		result = 31 * result + (properties != null ? properties.hashCode() : 0);
-		result = 31 * result + (note != null ? note.hashCode() : 0);
 		result = 31 * result + (marked ? 1 : 0);
 		return result;
 	}
@@ -216,14 +202,6 @@ public class LogRecord  {
 
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
-	}
-
-	public Note getNote() {
-		return note;
-	}
-
-	public void setNote(Note note) {
-		this.note = note;
 	}
 
 	public boolean isMarked() {
@@ -272,9 +250,9 @@ public class LogRecord  {
 				.append(id)
 				.append(", properties=")
 				.append(properties != null ? toString(properties.entrySet(),
-						maxLen) : null).append(", note=").append(note)
-				.append(", marked=").append(marked).append(", markerColors=")
-				.append(", logSource=").append(logSource).append("]");
+						maxLen) : null).append(", marked=").append(marked)
+				.append(", markerColors=").append(", logSource=")
+				.append(logSource).append("]");
 		return builder.toString();
 	}
 

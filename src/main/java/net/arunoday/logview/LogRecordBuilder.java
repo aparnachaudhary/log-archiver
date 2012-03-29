@@ -76,11 +76,6 @@ public class LogRecordBuilder {
     return this;
   }
 
-  public LogRecordBuilder withNote(Note note) {
-    ld.setNote(note);
-    return this;
-  }
-
   public LogRecordBuilder withProperties(Map<String, String> properties) {
     ld.setProperties(properties);
     return this;
