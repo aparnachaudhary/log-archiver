@@ -1,12 +1,6 @@
 package net.arunoday.logview;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-
-import net.arunoday.logview.util.MapCompare;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,11 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class LogRecord {
 
 	@Id
-	private String uuid;
-
-	private int id;
+	private String id;
 	private Date date = new Date();
-	private Level level = Level.INFO;
+	private String level = "";
 	private String messageId = "";
 	private String clazz = "";
 	private String method = "";
@@ -29,7 +21,6 @@ public class LogRecord {
 	private String thread = "";
 	private String loggerName = "";
 	private String message = "";
-	private Map<String, String> properties;
 	private boolean marked;
 	private String logSource;
 
@@ -41,11 +32,11 @@ public class LogRecord {
 		this.date = date;
 	}
 
-	public Level getLevel() {
+	public String getLevel() {
 		return level;
 	}
 
-	public void setLevel(Level level) {
+	public void setLevel(String level) {
 		this.level = level;
 	}
 
@@ -121,11 +112,11 @@ public class LogRecord {
 		this.message = message;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -168,8 +159,8 @@ public class LogRecord {
 			return false;
 		if (ndc != null ? !ndc.equals(logData.ndc) : logData.ndc != null)
 			return false;
-		if (!MapCompare.areMapsEquals(properties, logData.properties))
-			return false;
+		// if (!MapCompare.areMapsEquals(properties, logData.properties))
+		// return false;
 		if (thread != null ? !thread.equals(logData.thread)
 				: logData.thread != null)
 			return false;
@@ -190,19 +181,20 @@ public class LogRecord {
 		result = 31 * result + (thread != null ? thread.hashCode() : 0);
 		result = 31 * result + (loggerName != null ? loggerName.hashCode() : 0);
 		result = 31 * result + (message != null ? message.hashCode() : 0);
-		result = 31 * result + id;
-		result = 31 * result + (properties != null ? properties.hashCode() : 0);
+		result = 31 * result + (id != null ? id.hashCode() : 0);
+		// result = 31 * result + (properties != null ? properties.hashCode() :
+		// 0);
 		result = 31 * result + (marked ? 1 : 0);
 		return result;
 	}
 
-	public Map<String, String> getProperties() {
-		return properties;
-	}
-
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
+	// public Map<String, String> getProperties() {
+	// return properties;
+	// }
+	//
+	// public void setProperties(Map<String, String> properties) {
+	// this.properties = properties;
+	// }
 
 	public boolean isMarked() {
 		return marked;
@@ -222,51 +214,17 @@ public class LogRecord {
 
 	@Override
 	public String toString() {
-		final int maxLen = 10;
 		StringBuilder builder = new StringBuilder();
-		builder.append("LogRecord [date=")
-				.append(date)
-				.append(", level=")
-				.append(level)
-				.append(", messageId=")
-				.append(messageId)
-				.append(", clazz=")
-				.append(clazz)
-				.append(", method=")
-				.append(method)
-				.append(", file=")
-				.append(file)
-				.append(", line=")
-				.append(line)
-				.append(", ndc=")
-				.append(ndc)
-				.append(", thread=")
-				.append(thread)
-				.append(", loggerName=")
-				.append(loggerName)
-				.append(", message=")
-				.append(message)
-				.append(", id=")
-				.append(id)
-				.append(", properties=")
-				.append(properties != null ? toString(properties.entrySet(),
-						maxLen) : null).append(", marked=").append(marked)
-				.append(", markerColors=").append(", logSource=")
-				.append(logSource).append("]");
-		return builder.toString();
-	}
-
-	private String toString(Collection<?> collection, int maxLen) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		int i = 0;
-		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext()
-				&& i < maxLen; i++) {
-			if (i > 0)
-				builder.append(", ");
-			builder.append(iterator.next());
-		}
-		builder.append("]");
+		builder.append("LogRecord [date=").append(date).append(", level=")
+				.append(level).append(", messageId=").append(messageId)
+				.append(", clazz=").append(clazz).append(", method=")
+				.append(method).append(", file=").append(file)
+				.append(", line=").append(line).append(", ndc=").append(ndc)
+				.append(", thread=").append(thread).append(", loggerName=")
+				.append(loggerName).append(", message=").append(message)
+				.append(", id=").append(id).append(", properties=")
+				.append(", marked=").append(marked).append(", markerColors=")
+				.append(", logSource=").append(logSource).append("]");
 		return builder.toString();
 	}
 

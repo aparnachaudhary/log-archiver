@@ -2,6 +2,7 @@ package net.arunoday.logstore;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -40,38 +41,42 @@ public class LogProcessor {
 
 	private void parseFile(File file) {
 		try {
-			InputStream in = new FileInputStream(file);
-			System.out.println("Available: " + in.available());
-			Properties p = new Properties();
-			// TIMESTAMP LEVEL [THREAD] CLASS (FILE:LINE) - MESSAGE
-			// %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%t] %m%n
-			p.setProperty(PROPERTY_TYPE, "log4j");
-			p.setProperty(PROPERTY_PATTERN, "TIMESTAMP LEVEL [THREAD] MESSAGE");
-			p.setProperty(PROPERTY_DATE_FORMAT, "yyyy-MM-dd HH:mm:ss,SSS");
-			p.setProperty(PROPERTY_NAME,
-					"Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n");
-
-			Log4jPatternMultilineLogParser parser = new Log4jPatternMultilineLogParser();
-
-			LogRecordCollector collector = new ProxyLogDataCollector();
-			ParsingContext context = new ParsingContext();
-			LogImporterUsingParser importerUsingParser = new LogImporterUsingParser(
-					parser);
-			importerUsingParser.init(p);
-			importerUsingParser.initParsingContext(context);
-			importerUsingParser.importLogs(in, collector, context);
-			LogRecord[] logDatas = collector.getLogRecords();
-			System.err.println("Have: " + logDatas.length);
-			for (LogRecord record : logDatas) {
-				System.err.println("logData: " + record.getId() + "|"
-						+ record.getThread() + "|" + record.getDate() + "|"
-						+ record.getLevel() + "|\"" + record.getMessage()
-						+ "\"");
-				logRecordRepository.run(record);
+			LogRecord[] logRecords = collectLogRecords(file);
+			logRecordRepository.createCollection();
+			for (LogRecord record : logRecords) {
+				// System.err.println("record: " + record.getId() + "|"
+				// + record.getThread() + "|" + record.getDate() + "|"
+				// + record.getLevel() + "|\"" + record.getMessage()
+				// + "\"");
+				logRecordRepository.persist(record);
 			}
+			logRecordRepository.findAll();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private LogRecord[] collectLogRecords(File file)
+			throws FileNotFoundException, Exception {
+		InputStream in = new FileInputStream(file);
+		Properties p = new Properties();
+		// TIMESTAMP LEVEL [THREAD] CLASS (FILE:LINE) - MESSAGE
+		// %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%t] %m%n
+		p.setProperty(PROPERTY_TYPE, "log4j");
+		p.setProperty(PROPERTY_PATTERN, "TIMESTAMP LEVEL [THREAD] MESSAGE");
+		p.setProperty(PROPERTY_DATE_FORMAT, "yyyy-MM-dd HH:mm:ss,SSS");
+		p.setProperty(PROPERTY_NAME, "Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n");
+
+		Log4jPatternMultilineLogParser parser = new Log4jPatternMultilineLogParser();
+		LogRecordCollector collector = new ProxyLogDataCollector();
+		ParsingContext context = new ParsingContext();
+		LogImporterUsingParser importerUsingParser = new LogImporterUsingParser(
+				parser);
+		importerUsingParser.init(p);
+		importerUsingParser.initParsingContext(context);
+		importerUsingParser.importLogs(in, collector, context);
+		LogRecord[] logRecords = collector.getLogRecords();
+		return logRecords;
 	}
 }
