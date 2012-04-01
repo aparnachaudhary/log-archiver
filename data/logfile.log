@@ -60,7 +60,7 @@ Caused by: com.mongodb.MongoException$Network: can't call something : /127.0.0.1
 	at com.mongodb.DBCollection.count(DBCollection.java:778)
 	at com.mongodb.gridfs.GridFS.<init>(GridFS.java:85)
 	at com.mongodb.gridfs.GridFS.<init>(GridFS.java:67)
-	at net.arunoday.logstore.LogProcessor.process(LogProcessor.java:36)
+	at net.arunoday.logstore.repository.LogProcessor.process(LogProcessor.java:36)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)

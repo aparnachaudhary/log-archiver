@@ -1,4 +1,4 @@
-package net.arunoday.logstore;
+package net.arunoday.logstore.repository;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,12 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import net.arunoday.logview.LogRecord;
-import net.arunoday.logview.LogRecordCollector;
-import net.arunoday.logview.importer.LogImporterUsingParser;
-import net.arunoday.logview.parser.ParsingContext;
-import net.arunoday.logview.parser.log4j.Log4jPatternMultilineLogParser;
-import net.arunoday.logview.reader.ProxyLogDataCollector;
+import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.importer.LogImporterUsingParser;
+import net.arunoday.logstore.parser.ParsingContext;
+import net.arunoday.logstore.parser.log4j.Log4jPatternMultilineLogParser;
+import net.arunoday.logstore.reader.ProxyLogDataCollector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class LogProcessor {
 				// + record.getThread() + "|" + record.getDate() + "|"
 				// + record.getLevel() + "|\"" + record.getMessage()
 				// + "\"");
-				logRecordRepository.persist(record);
+				logRecordRepository.save(record);
 			}
 			logRecordRepository.findAll();
 

@@ -1,4 +1,4 @@
-package net.arunoday.logview.parser.log4j;
+package net.arunoday.logstore.parser.log4j;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -36,13 +36,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import net.arunoday.logview.LogRecord;
-import net.arunoday.logview.LogRecordCollector;
-import net.arunoday.logview.importer.LogImporterUsingParser;
-import net.arunoday.logview.parser.MultiLineLogParser;
-import net.arunoday.logview.parser.ParserDescription;
-import net.arunoday.logview.parser.ParsingContext;
-import net.arunoday.logview.reader.ProxyLogDataCollector;
+import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.importer.LogImporterUsingParser;
+import net.arunoday.logstore.parser.MultiLineLogParser;
+import net.arunoday.logstore.parser.ParserDescription;
+import net.arunoday.logstore.parser.ParsingContext;
+import net.arunoday.logstore.reader.ProxyLogDataCollector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

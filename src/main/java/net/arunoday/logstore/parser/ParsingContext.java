@@ -1,4 +1,4 @@
-package net.arunoday.logview.parser;
+package net.arunoday.logstore.parser;
 
 import java.text.DateFormat;
 import java.util.HashMap;

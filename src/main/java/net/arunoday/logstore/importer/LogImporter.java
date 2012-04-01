@@ -1,12 +1,12 @@
-package net.arunoday.logview.importer;
+package net.arunoday.logstore.importer;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 import javax.swing.Icon;
 
-import net.arunoday.logview.LogRecordCollector;
-import net.arunoday.logview.parser.ParsingContext;
+import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.parser.ParsingContext;
 
 
 public interface LogImporter {

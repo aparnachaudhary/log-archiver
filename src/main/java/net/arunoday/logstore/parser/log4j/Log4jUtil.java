@@ -1,10 +1,10 @@
-package net.arunoday.logview.parser.log4j;
+package net.arunoday.logstore.parser.log4j;
 
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.arunoday.logview.LogRecord;
+import net.arunoday.logstore.LogRecord;
 
 import org.apache.log4j.spi.LoggingEvent;
 

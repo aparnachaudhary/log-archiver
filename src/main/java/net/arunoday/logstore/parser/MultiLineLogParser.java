@@ -1,8 +1,8 @@
-package net.arunoday.logview.parser;
+package net.arunoday.logstore.parser;
 
 import java.text.ParseException;
 
-import net.arunoday.logview.LogRecord;
+import net.arunoday.logstore.LogRecord;
 
 
 public interface MultiLineLogParser extends LogParser {

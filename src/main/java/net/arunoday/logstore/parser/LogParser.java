@@ -1,9 +1,9 @@
-package net.arunoday.logview.parser;
+package net.arunoday.logstore.parser;
 
 import java.text.ParseException;
 import java.util.Properties;
 
-import net.arunoday.logview.LogRecord;
+import net.arunoday.logstore.LogRecord;
 
 
 public interface LogParser {

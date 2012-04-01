@@ -1,4 +1,4 @@
-package net.arunoday.logview.importer;
+package net.arunoday.logstore.importer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 
 import javax.swing.Icon;
 
-import net.arunoday.logview.LogRecord;
-import net.arunoday.logview.LogRecordCollector;
-import net.arunoday.logview.parser.LogParser;
-import net.arunoday.logview.parser.MultiLineLogParser;
-import net.arunoday.logview.parser.ParserDescription;
-import net.arunoday.logview.parser.ParsingContext;
+import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.parser.LogParser;
+import net.arunoday.logstore.parser.MultiLineLogParser;
+import net.arunoday.logstore.parser.ParserDescription;
+import net.arunoday.logstore.parser.ParsingContext;
 
 public class LogImporterUsingParser implements LogImporter {
 
@@ -107,7 +107,7 @@ public class LogImporterUsingParser implements LogImporter {
 				logData = multiLineLogParser.parseBuffer(parsingContext);
 				if (logData != null) {
 					// FIXME:: Id commented.
-					//logData.setId(parsingContext.getGeneratedIdAndIncrease());
+					// logData.setId(parsingContext.getGeneratedIdAndIncrease());
 					logData.setLogSource(parsingContext.getLogSource());
 					synchronized (parsingContext) {
 						dataCollector.add(logData);

@@ -1,4 +1,4 @@
-package net.arunoday.logview.reader;
+package net.arunoday.logstore.reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

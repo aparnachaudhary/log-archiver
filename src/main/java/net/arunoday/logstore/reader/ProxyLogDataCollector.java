@@ -1,9 +1,9 @@
-package net.arunoday.logview.reader;
+package net.arunoday.logstore.reader;
 
 import java.util.LinkedList;
 
-import net.arunoday.logview.LogRecord;
-import net.arunoday.logview.LogRecordCollector;
+import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.LogRecordCollector;
 
 
 public class ProxyLogDataCollector implements LogRecordCollector {

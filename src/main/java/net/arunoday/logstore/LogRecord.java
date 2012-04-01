@@ -1,4 +1,4 @@
-package net.arunoday.logview;
+package net.arunoday.logstore;
 
 import java.util.Date;
 
