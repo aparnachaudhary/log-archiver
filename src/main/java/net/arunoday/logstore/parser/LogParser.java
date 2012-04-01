@@ -3,7 +3,7 @@ package net.arunoday.logstore.parser;
 import java.text.ParseException;
 import java.util.Properties;
 
-import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.domain.LogRecord;
 
 
 public interface LogParser {

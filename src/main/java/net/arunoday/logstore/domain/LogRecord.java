@@ -1,10 +1,13 @@
-package net.arunoday.logstore;
+package net.arunoday.logstore.domain;
 
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * @author aparnachaudhary
+ */
 @Document
 public class LogRecord {
 
@@ -127,40 +130,40 @@ public class LogRecord {
 		if (o == null || getClass() != o.getClass())
 			return false;
 
-		LogRecord logData = (LogRecord) o;
+		LogRecord logRecord = (LogRecord) o;
 
-		if (id != logData.id)
+		if (id != logRecord.id)
 			return false;
-		if (marked != logData.marked)
+		if (marked != logRecord.marked)
 			return false;
-		if (clazz != null ? !clazz.equals(logData.clazz)
-				: logData.clazz != null)
+		if (clazz != null ? !clazz.equals(logRecord.clazz)
+				: logRecord.clazz != null)
 			return false;
-		if (date != null ? !date.equals(logData.date) : logData.date != null)
+		if (date != null ? !date.equals(logRecord.date) : logRecord.date != null)
 			return false;
-		if (file != null ? !file.equals(logData.file) : logData.file != null)
+		if (file != null ? !file.equals(logRecord.file) : logRecord.file != null)
 			return false;
-		if (level != null ? !level.equals(logData.level)
-				: logData.level != null)
+		if (level != null ? !level.equals(logRecord.level)
+				: logRecord.level != null)
 			return false;
-		if (line != null ? !line.equals(logData.line) : logData.line != null)
+		if (line != null ? !line.equals(logRecord.line) : logRecord.line != null)
 			return false;
-		if (loggerName != null ? !loggerName.equals(logData.loggerName)
-				: logData.loggerName != null)
+		if (loggerName != null ? !loggerName.equals(logRecord.loggerName)
+				: logRecord.loggerName != null)
 			return false;
-		if (message != null ? !message.equals(logData.message)
-				: logData.message != null)
+		if (message != null ? !message.equals(logRecord.message)
+				: logRecord.message != null)
 			return false;
-		if (messageId != null ? !messageId.equals(logData.messageId)
-				: logData.messageId != null)
+		if (messageId != null ? !messageId.equals(logRecord.messageId)
+				: logRecord.messageId != null)
 			return false;
-		if (method != null ? !method.equals(logData.method)
-				: logData.method != null)
+		if (method != null ? !method.equals(logRecord.method)
+				: logRecord.method != null)
 			return false;
-		if (ndc != null ? !ndc.equals(logData.ndc) : logData.ndc != null)
+		if (ndc != null ? !ndc.equals(logRecord.ndc) : logRecord.ndc != null)
 			return false;
-		if (thread != null ? !thread.equals(logData.thread)
-				: logData.thread != null)
+		if (thread != null ? !thread.equals(logRecord.thread)
+				: logRecord.thread != null)
 			return false;
 
 		return true;
@@ -169,6 +172,7 @@ public class LogRecord {
 	@Override
 	public int hashCode() {
 		int result = date != null ? date.hashCode() : 0;
+		result = 31 * result + (id != null ? id.hashCode() : 0);
 		result = 31 * result + (level != null ? level.hashCode() : 0);
 		result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
 		result = 31 * result + (clazz != null ? clazz.hashCode() : 0);
@@ -179,20 +183,9 @@ public class LogRecord {
 		result = 31 * result + (thread != null ? thread.hashCode() : 0);
 		result = 31 * result + (loggerName != null ? loggerName.hashCode() : 0);
 		result = 31 * result + (message != null ? message.hashCode() : 0);
-		result = 31 * result + (id != null ? id.hashCode() : 0);
-		// result = 31 * result + (properties != null ? properties.hashCode() :
-		// 0);
 		result = 31 * result + (marked ? 1 : 0);
 		return result;
 	}
-
-	// public Map<String, String> getProperties() {
-	// return properties;
-	// }
-	//
-	// public void setProperties(Map<String, String> properties) {
-	// this.properties = properties;
-	// }
 
 	public boolean isMarked() {
 		return marked;
@@ -213,16 +206,21 @@ public class LogRecord {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("LogRecord [date=").append(date).append(", level=")
-				.append(level).append(", messageId=").append(messageId)
-				.append(", clazz=").append(clazz).append(", method=")
-				.append(method).append(", file=").append(file)
-				.append(", line=").append(line).append(", ndc=").append(ndc)
-				.append(", thread=").append(thread).append(", loggerName=")
-				.append(loggerName).append(", message=").append(message)
-				.append(", id=").append(id).append(", properties=")
-				.append(", marked=").append(marked).append(", markerColors=")
-				.append(", logSource=").append(logSource).append("]");
+		builder.append("LogRecord [").append(", id=").append(id)
+				.append(", date=").append(date)
+				.append(", level=").append(level)
+				.append(", messageId=").append(messageId)
+				.append(", clazz=").append(clazz)
+				.append(", method=").append(method)
+				.append(", file=").append(file)
+				.append(", line=").append(line)
+				.append(", ndc=").append(ndc)
+				.append(", thread=").append(thread)
+				.append(", loggerName=").append(loggerName)
+				.append(", message=").append(message)
+				.append(", marked=").append(marked)
+				.append(", logSource=").append(logSource)
+				.append("]");
 		return builder.toString();
 	}
 

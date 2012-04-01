@@ -6,11 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import net.arunoday.logstore.LogRecord;
-import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.domain.LogRecord;
 import net.arunoday.logstore.importer.LogImporterUsingParser;
 import net.arunoday.logstore.parser.ParsingContext;
 import net.arunoday.logstore.parser.log4j.Log4jPatternMultilineLogParser;
+import net.arunoday.logstore.reader.LogRecordCollector;
 import net.arunoday.logstore.reader.ProxyLogDataCollector;
 
 import org.springframework.beans.factory.annotation.Autowired;

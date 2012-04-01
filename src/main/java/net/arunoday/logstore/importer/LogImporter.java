@@ -3,10 +3,8 @@ package net.arunoday.logstore.importer;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.swing.Icon;
-
-import net.arunoday.logstore.LogRecordCollector;
 import net.arunoday.logstore.parser.ParsingContext;
+import net.arunoday.logstore.reader.LogRecordCollector;
 
 
 public interface LogImporter {
@@ -18,7 +16,6 @@ public interface LogImporter {
   public final String PARSER_DISPLAYABLE_NAME = "parser.displayableName";
   public final String PARSER_MNEMONIC = "parser.mnemonic";
   public final String PARSER_KEY_STROKE_ACCELELATOR = "parser.keyStrokeAccelelator";
-  public final String PARSER_ICON = "parser.icon";
 
   public void init(Properties properties) throws Exception;
 
@@ -35,5 +32,4 @@ public interface LogImporter {
 
   public int getMnemonic();
 
-  public Icon getIcon();
 }

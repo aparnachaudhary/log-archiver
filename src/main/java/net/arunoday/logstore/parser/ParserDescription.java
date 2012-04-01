@@ -1,6 +1,5 @@
 package net.arunoday.logstore.parser;
 
-import javax.swing.Icon;
 
 public class ParserDescription {
 
@@ -8,7 +7,6 @@ public class ParserDescription {
   private String description;
   private int menmonic;
   private String keyStrokeAccelelator;
-  private Icon icon;
   private String charset;
   private String file;
 
@@ -50,14 +48,6 @@ public class ParserDescription {
 
   public void setKeyStrokeAccelelator(String keyStrokeAccelelator) {
     this.keyStrokeAccelelator = keyStrokeAccelelator;
-  }
-
-  public Icon getIcon() {
-    return icon;
-  }
-
-  public void setIcon(Icon icon) {
-    this.icon = icon;
   }
 
   public String getCharset() {

@@ -10,14 +10,12 @@ import java.text.ParseException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.swing.Icon;
-
-import net.arunoday.logstore.LogRecord;
-import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.domain.LogRecord;
 import net.arunoday.logstore.parser.LogParser;
 import net.arunoday.logstore.parser.MultiLineLogParser;
 import net.arunoday.logstore.parser.ParserDescription;
 import net.arunoday.logstore.parser.ParsingContext;
+import net.arunoday.logstore.reader.LogRecordCollector;
 
 public class LogImporterUsingParser implements LogImporter {
 
@@ -130,11 +128,6 @@ public class LogImporterUsingParser implements LogImporter {
 	@Override
 	public int getMnemonic() {
 		return pd.getMenmonic();
-	}
-
-	@Override
-	public Icon getIcon() {
-		return pd.getIcon();
 	}
 
 	@Override

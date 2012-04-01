@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.domain.LogRecord;
 
 import org.apache.log4j.spi.LoggingEvent;
 

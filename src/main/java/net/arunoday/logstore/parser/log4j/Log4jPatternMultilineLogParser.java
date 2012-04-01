@@ -36,12 +36,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import net.arunoday.logstore.LogRecord;
-import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.domain.LogRecord;
 import net.arunoday.logstore.importer.LogImporterUsingParser;
 import net.arunoday.logstore.parser.MultiLineLogParser;
 import net.arunoday.logstore.parser.ParserDescription;
 import net.arunoday.logstore.parser.ParsingContext;
+import net.arunoday.logstore.reader.LogRecordCollector;
 import net.arunoday.logstore.reader.ProxyLogDataCollector;
 
 import org.apache.log4j.Level;

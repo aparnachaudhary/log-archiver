@@ -1,4 +1,6 @@
-package net.arunoday.logstore;
+package net.arunoday.logstore.reader;
+
+import net.arunoday.logstore.domain.LogRecord;
 
 public interface LogRecordCollector {
 

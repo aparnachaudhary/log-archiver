@@ -2,8 +2,7 @@ package net.arunoday.logstore.reader;
 
 import java.util.LinkedList;
 
-import net.arunoday.logstore.LogRecord;
-import net.arunoday.logstore.LogRecordCollector;
+import net.arunoday.logstore.domain.LogRecord;
 
 
 public class ProxyLogDataCollector implements LogRecordCollector {

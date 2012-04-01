@@ -4,7 +4,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import java.util.List;
 
-import net.arunoday.logstore.LogRecord;
+import net.arunoday.logstore.domain.LogRecord;
 import net.arunoday.logstore.repository.LogRecordRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+/**
+ * @author aparnachaudhary
+ */
 @Repository("logRecordRepository")
 public class LogRecordRepositoryImpl implements LogRecordRepository {
 
@@ -77,7 +80,7 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 
 	@Override
 	public LogRecord findOne(String id) {
-		return mongoOperations.findOne(new Query(where("thread").is("main")),
+		return mongoOperations.findOne(new Query(where("level").is("ERROR")),
 				LogRecord.class);
 	}
 
