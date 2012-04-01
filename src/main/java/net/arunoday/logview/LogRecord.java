@@ -159,8 +159,6 @@ public class LogRecord {
 			return false;
 		if (ndc != null ? !ndc.equals(logData.ndc) : logData.ndc != null)
 			return false;
-		// if (!MapCompare.areMapsEquals(properties, logData.properties))
-		// return false;
 		if (thread != null ? !thread.equals(logData.thread)
 				: logData.thread != null)
 			return false;
