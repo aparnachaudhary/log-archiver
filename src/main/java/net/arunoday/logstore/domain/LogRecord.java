@@ -6,7 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * @author aparnachaudhary
+ * 
+ * @author Aparna Chaudhary
  */
 @Document
 public class LogRecord {
@@ -139,14 +140,17 @@ public class LogRecord {
 		if (clazz != null ? !clazz.equals(logRecord.clazz)
 				: logRecord.clazz != null)
 			return false;
-		if (date != null ? !date.equals(logRecord.date) : logRecord.date != null)
+		if (date != null ? !date.equals(logRecord.date)
+				: logRecord.date != null)
 			return false;
-		if (file != null ? !file.equals(logRecord.file) : logRecord.file != null)
+		if (file != null ? !file.equals(logRecord.file)
+				: logRecord.file != null)
 			return false;
 		if (level != null ? !level.equals(logRecord.level)
 				: logRecord.level != null)
 			return false;
-		if (line != null ? !line.equals(logRecord.line) : logRecord.line != null)
+		if (line != null ? !line.equals(logRecord.line)
+				: logRecord.line != null)
 			return false;
 		if (loggerName != null ? !loggerName.equals(logRecord.loggerName)
 				: logRecord.loggerName != null)
@@ -207,20 +211,15 @@ public class LogRecord {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("LogRecord [").append(", id=").append(id)
-				.append(", date=").append(date)
-				.append(", level=").append(level)
-				.append(", messageId=").append(messageId)
-				.append(", clazz=").append(clazz)
-				.append(", method=").append(method)
-				.append(", file=").append(file)
-				.append(", line=").append(line)
-				.append(", ndc=").append(ndc)
-				.append(", thread=").append(thread)
-				.append(", loggerName=").append(loggerName)
-				.append(", message=").append(message)
-				.append(", marked=").append(marked)
-				.append(", logSource=").append(logSource)
-				.append("]");
+				.append(", date=").append(date).append(", level=")
+				.append(level).append(", messageId=").append(messageId)
+				.append(", clazz=").append(clazz).append(", method=")
+				.append(method).append(", file=").append(file)
+				.append(", line=").append(line).append(", ndc=").append(ndc)
+				.append(", thread=").append(thread).append(", loggerName=")
+				.append(loggerName).append(", message=").append(message)
+				.append(", marked=").append(marked).append(", logSource=")
+				.append(logSource).append("]");
 		return builder.toString();
 	}
 

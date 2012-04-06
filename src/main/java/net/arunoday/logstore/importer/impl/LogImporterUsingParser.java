@@ -1,4 +1,4 @@
-package net.arunoday.logstore.importer;
+package net.arunoday.logstore.importer.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,41 +7,53 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+
 import net.arunoday.logstore.domain.LogRecord;
+import net.arunoday.logstore.importer.LogImporter;
 import net.arunoday.logstore.parser.LogParser;
 import net.arunoday.logstore.parser.MultiLineLogParser;
 import net.arunoday.logstore.parser.ParserDescription;
 import net.arunoday.logstore.parser.ParsingContext;
 import net.arunoday.logstore.reader.LogRecordCollector;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author Aparna Chaudhary
+ * 
+ */
+@Component
 public class LogImporterUsingParser implements LogImporter {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(LogImporterUsingParser.class.getName());
-	private LogParser parser = null;
+	@Autowired
+	LogParser parser;
+
+	@Autowired
+	LogRecordCollector dataCollector;
 
 	private ParserDescription pd;
 
-	public LogImporterUsingParser(LogParser parser) {
+	public LogImporterUsingParser() {
 		super();
-		this.parser = parser;
+		// this.parser = parser;
+	}
+
+	@PostConstruct
+	public void init() {
 		pd = parser.getParserDescription();
 	}
 
-	public void init(Properties properties) throws Exception {
-		parser.init(properties);
-	}
-
 	@Override
-	public void importLogs(InputStream in,
-			final LogRecordCollector dataCollector,
-			ParsingContext parsingContext) {
+	public void importLogs(InputStream in, ParsingContext parsingContext) {
 		LOGGER.finest("Log import started ");
 		String line = null;
-		LogRecord logData = null;
+		LogRecord logRecord = null;
 		String charset = parser.getParserDescription().getCharset();
 
 		BufferedReader logReader = null;
@@ -70,17 +82,15 @@ public class LogImporterUsingParser implements LogImporter {
 
 				if (parser instanceof MultiLineLogParser) {
 					synchronized (parsingContext) {
-						logData = parser.parse(line, parsingContext);
+						logRecord = parser.parse(line, parsingContext);
 					}
 				} else {
-					logData = parser.parse(line, parsingContext);
+					logRecord = parser.parse(line, parsingContext);
 				}
 
-				if (logData != null) {
-					// FIXME:: Id commented.
-					// logData.setId(parsingContext.getGeneratedIdAndIncrease());
-					logData.setLogSource(parsingContext.getLogSource());
-					dataCollector.add(logData);
+				if (logRecord != null) {
+					logRecord.setLogSource(parsingContext.getLogSource());
+					dataCollector.add(logRecord);
 					parsingContext.setLastParsed(System.currentTimeMillis());
 				}
 
@@ -102,13 +112,11 @@ public class LogImporterUsingParser implements LogImporter {
 		try {
 			if (parser instanceof MultiLineLogParser) {
 				MultiLineLogParser multiLineLogParser = (MultiLineLogParser) parser;
-				logData = multiLineLogParser.parseBuffer(parsingContext);
-				if (logData != null) {
-					// FIXME:: Id commented.
-					// logData.setId(parsingContext.getGeneratedIdAndIncrease());
-					logData.setLogSource(parsingContext.getLogSource());
+				logRecord = multiLineLogParser.parseBuffer(parsingContext);
+				if (logRecord != null) {
+					logRecord.setLogSource(parsingContext.getLogSource());
 					synchronized (parsingContext) {
-						dataCollector.add(logData);
+						dataCollector.add(logRecord);
 					}
 					parsingContext.setLastParsed(System.currentTimeMillis());
 				}
@@ -147,6 +155,10 @@ public class LogImporterUsingParser implements LogImporter {
 	@Override
 	public void initParsingContext(ParsingContext parsingContext) {
 		parser.initParsingContext(parsingContext);
+	}
+
+	public LogRecordCollector getDataCollector() {
+		return dataCollector;
 	}
 
 }

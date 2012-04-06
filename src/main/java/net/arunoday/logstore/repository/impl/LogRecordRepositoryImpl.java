@@ -15,9 +15,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 /**
- * @author aparnachaudhary
+ * @author Aparna Chaudhary
+ * 
  */
 @Repository("logRecordRepository")
+// FIXME: Add implementation
 public class LogRecordRepositoryImpl implements LogRecordRepository {
 
 	@Autowired
@@ -49,12 +51,6 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 		System.err.println("Collection Name:" + collectionName);
 		System.err.println("Total Log Records: "
 				+ mongoOperations.getCollection(collectionName).count());
-
-		List<LogRecord> result = mongoOperations.find(new Query(where("thread")
-				.is("main")), LogRecord.class);
-
-		System.err.println("Total Found : " + result.size());
-		System.err.println(result);
 
 		List<LogRecord> results = mongoOperations.findAll(LogRecord.class);
 		System.out.println("Results: " + results.size());

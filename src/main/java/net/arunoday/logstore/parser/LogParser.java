@@ -1,22 +1,38 @@
 package net.arunoday.logstore.parser;
 
 import java.text.ParseException;
-import java.util.Properties;
 
 import net.arunoday.logstore.domain.LogRecord;
 
-
+/**
+ * @author Aparna Chaudhary
+ * 
+ */
 public interface LogParser {
 
-  public static int LOG_PARSER_VERSION_1 = 1;
+	public static int LOG_PARSER_VERSION_1 = 1;
 
-  public void init(Properties properties) throws Exception;
+	/**
+	 * @param parsingContext
+	 */
+	public void initParsingContext(ParsingContext parsingContext);
 
-  public void initParsingContext(ParsingContext parsingContext);
+	/**
+	 * @param line
+	 * @param parsingContext
+	 * @return
+	 * @throws ParseException
+	 */
+	public LogRecord parse(String line, ParsingContext parsingContext)
+			throws ParseException;
 
-  public LogRecord parse(String line, ParsingContext parsingContext) throws ParseException;
+	/**
+	 * @return
+	 */
+	public ParserDescription getParserDescription();
 
-  public ParserDescription getParserDescription();
-
-  public int getVersion();
+	/**
+	 * @return
+	 */
+	public int getVersion();
 }

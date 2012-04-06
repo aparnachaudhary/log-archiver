@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:integration="http://www.springframework.org/schema/integration"
 	xmlns:file="http://www.springframework.org/schema/integration/file"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -12,21 +11,57 @@
 		http://www.springframework.org/schema/integration/spring-integration.xsd
 		http://www.springframework.org/schema/integration/file
 		http://www.springframework.org/schema/integration/file/spring-integration-file.xsd">
-        
+
 	<context:component-scan base-package="net.arunoday.logstore" />
 
 	<file:inbound-channel-adapter id="filesIn"
 		directory="file:data" prevent-duplicates="true" auto-startup="true"
-		channel="fileChannel" filename-pattern="logfile.log">
+		channel="fileChannel" filename-pattern="logfile_small.log">
 		<integration:poller fixed-rate="10" />
 	</file:inbound-channel-adapter>
 
-	<integration:service-activator id="logProcessor" input-channel="fileChannel" output-channel="logger">
-		<bean class="net.arunoday.logstore.repository.LogProcessor" />
+	<integration:service-activator id="logProcessor"
+		input-channel="fileChannel" output-channel="logger">
+		<bean class="net.arunoday.logstore.importer.impl.LogProcessor">
+			<!-- <property name="type" value="log4j"/> <property name="name" value="Lo4j-pattern: 
+				%d{ISO8601} %-5p [%t] %m%n"/> <property name="pattern" value="TIMESTAMP LEVEL 
+				[THREAD] MESSAGE"/> <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss,SSS"/> -->
+		</bean>
 	</integration:service-activator>
 
-	<integration:logging-channel-adapter id="logger"
-		level="DEBUG" log-full-message="true" />
+	<integration:logging-channel-adapter
+		id="logger" level="DEBUG" log-full-message="true" />
+
+	<!-- ===================================================== -->
+	<!-- PARSER SETUP -->
+	<!-- ===================================================== -->
+	<bean id="log4jPatternMultilineLogParser"
+		class="net.arunoday.logstore.parser.log4j.Log4jPatternMultilineLogParser">
+		<property name="logFormat" value="TIMESTAMP LEVEL [THREAD] MESSAGE" />
+		<property name="timestampFormat" value="yyyy-MM-dd HH:mm:ss,SSS" />
+	</bean>
+
+	<bean id="parserDescription" class="net.arunoday.logstore.parser.ParserDescription">
+		<property name="displayName" value="Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n" />
+		<property name="description" value="SOMETHING" />
+		<property name="charset" value="UTF-8" />
+	</bean>
+
+	<bean id="parsingProperties" class="java.util.Properties">
+		<constructor-arg>
+			<props>
+				<prop key="name">Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n</prop>
+				<prop key="pattern">TIMESTAMP LEVEL [THREAD] MESSAGE</prop>
+				<prop key="dateFormat">yyyy-MM-dd HH:mm:ss,SSS</prop>
+				<prop key="type">log4j</prop>
+			</props>
+		</constructor-arg>
+	</bean>
+	<!-- <bean id="parsingProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+		<property name="properties"> <props> <prop key="name">${hibernate.dialect}</prop> 
+		<prop key="pattern">${hibernate.query.substitutions}</prop> <prop key="dateFormat">${hibernate.show_sql}</prop> 
+		<prop key="type">${hibernate.cglib.use_refl}</prop> </props> </property> 
+		</bean> -->
 
 	<!-- ===================================================== -->
 	<!-- MONGODB SETUP -->
@@ -43,7 +78,7 @@
 		<property name="host" value="127.0.0.1" />
 		<property name="port" value="27017" />
 	</bean>
-	
+
 	<!-- Use this post processor to translate any MongoExceptions thrown in 
 		@Repository annotated classes -->
 	<bean

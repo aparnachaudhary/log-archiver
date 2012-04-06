@@ -1,54 +1,33 @@
 package net.arunoday.logstore.parser.log4j;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.annotation.PostConstruct;
+
 import net.arunoday.logstore.domain.LogRecord;
-import net.arunoday.logstore.importer.LogImporterUsingParser;
 import net.arunoday.logstore.parser.MultiLineLogParser;
 import net.arunoday.logstore.parser.ParserDescription;
 import net.arunoday.logstore.parser.ParsingContext;
-import net.arunoday.logstore.reader.LogRecordCollector;
-import net.arunoday.logstore.reader.ProxyLogDataCollector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * LogFilePatternReceiver can parse and tail log files, converting entries into
@@ -155,22 +134,16 @@ import org.apache.log4j.spi.ThrowableInformation;
  *         /receivers/trunk
  *         /src/main/java/org/apache/log4j/varia/LogFilePatternReceiver.java
  */
+@Component("log4jPatternMultilineLogParser")
 public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 
 	private static final java.util.logging.Logger LOG = java.util.logging.Logger
 			.getLogger(Log4jPatternMultilineLogParser.class.getName());
 
-	public static final String PROPERTY_NAME = "name";
-	public static final String PROPERTY_PATTERN = "pattern";
-	public static final String PROPERTY_DATE_FORMAT = "dateFormat";
-	public static final String PROPERTY_CUSTOM_LEVELS = "customLevels";
-	public static final String PROPERTY_DESCRIPTION = "description";
-	public static final String PROPERTY_TYPE = "type";
-	public static final String PROPERTY_CHARSET = "charset";
+	@Autowired
+	ParserDescription parserDescription;
 
 	private final List<String> keywords = new ArrayList<String>();
-	// private SimpleDateFormat dateFormat;
-	// private Rule expressionRule;
 	private String[] emptyException = new String[] { "" };
 	private Map<String, Level> customLevelDefinitionMap = new HashMap<String, Level>();
 	private boolean appendNonMatches;
@@ -212,13 +185,10 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 	private String timestampFormat = "yyyy-MM-d HH:mm:ss,SSS";
 	private String logFormat;
 	private String customLevelDefinitions;
-	// private String filterExpression;
 	private String regexp;
 	private Pattern regexpPattern;
 	private Pattern exceptionPattern;
 	private String timestampPatternText;
-
-	private ParserDescription parserDescription;
 
 	public Log4jPatternMultilineLogParser() {
 		keywords.add(TIMESTAMP);
@@ -236,191 +206,15 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		} catch (PatternSyntaxException pse) {
 			// shouldn't happen
 		}
-		parserDescription = new ParserDescription();
-		parserDescription.setDescription("desc");
-		parserDescription.setDisplayName("displayName");
-
 	}
 
-	/**
-	 * If the log file contains non-log4j level strings, they can be mapped to
-	 * log4j levels using the format (android example):
-	 * V=TRACE,D=DEBUG,I=INFO,W=WARN,E=ERROR,F=FATAL,S=OFF
-	 * 
-	 * @param customLevelDefinitions
-	 *            the level definition string
-	 */
-	public void setCustomLevelDefinitions(String customLevelDefinitions) {
-		this.customLevelDefinitions = customLevelDefinitions;
-	}
-
-	public String getCustomLevelDefinitions() {
-		return customLevelDefinitions;
-	}
-
-	/**
-	 * Accessor
-	 * 
-	 * @return log format
-	 */
-	public String getLogFormat() {
-		return logFormat;
-	}
-
-	/**
-	 * Mutator
-	 * 
-	 * @param logFormat
-	 *            the format
-	 */
-	public void setLogFormat(String logFormat) {
-		this.logFormat = logFormat;
-	}
-
-	/**
-	 * Mutator. Specify a pattern from {@link java.text.SimpleDateFormat}
-	 * 
-	 * @param timestampFormat
-	 */
-	public void setTimestampFormat(String timestampFormat) {
-		this.timestampFormat = timestampFormat;
-	}
-
-	/**
-	 * Accessor
-	 * 
-	 * @return timestamp format
-	 */
-	public String getTimestampFormat() {
-		return timestampFormat;
-	}
-
-	/**
-	 * Walk the additionalLines list, looking for the EXCEPTION_PATTERN.
-	 * <p>
-	 * Return the index of the first matched line (the match may be the 1st line
-	 * of an exception)
-	 * <p>
-	 * Assumptions: <br>
-	 * - the additionalLines list may contain both message and exception lines<br>
-	 * - message lines are added to the additionalLines list and then exception
-	 * lines (all message lines occur in the list prior to all exception lines)
-	 * 
-	 * @return -1 if no exception line exists, line number otherwise
-	 */
-	private int getExceptionLine(ParsingContext ctx) {
-		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
-		for (int i = 0; i < additionalLines.length; i++) {
-			Matcher exceptionMatcher = exceptionPattern
-					.matcher(additionalLines[i]);
-			if (exceptionMatcher.matches()) {
-				return i;
-			}
+	@PostConstruct
+	public void init() throws Exception {
+		if (timestampFormat != null) {
+			timestampPatternText = convertTimestamp();
 		}
-		return -1;
-	}
-
-	/**
-	 * Combine all message lines occuring in the additionalLines list, adding a
-	 * newline character between each line
-	 * <p>
-	 * the event will already have a message - combine this message with the
-	 * message lines in the additionalLines list (all entries prior to the
-	 * exceptionLine index)
-	 * 
-	 * @param firstMessageLine
-	 *            primary message line
-	 * @param exceptionLine
-	 *            index of first exception line
-	 * @return message
-	 */
-	private String buildMessage(String firstMessageLine, int exceptionLine,
-			ParsingContext ctx) {
-		if (ctx.getUnmatchedLog().length() == 0) {
-			return firstMessageLine;
-		}
-		StringBuffer message = new StringBuffer();
-		if (firstMessageLine != null) {
-			message.append(firstMessageLine);
-		}
-		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
-		int linesToProcess = (exceptionLine == -1 ? additionalLines.length
-				: exceptionLine);
-
-		for (int i = 0; i < linesToProcess; i++) {
-			message.append(newLine);
-			message.append(additionalLines[i]);
-		}
-		return message.toString();
-	}
-
-	/**
-	 * Combine all exception lines occuring in the additionalLines list into a
-	 * String array
-	 * <p>
-	 * (all entries equal to or greater than the exceptionLine index)
-	 * 
-	 * @param exceptionLine
-	 *            index of first exception line
-	 * @return exception
-	 */
-	private String[] buildException(int exceptionLine, ParsingContext ctx) {
-		if (exceptionLine == -1) {
-			return emptyException;
-		}
-		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
-		String[] exception = new String[additionalLines.length - exceptionLine
-				- 1];
-		for (int i = 0; i < exception.length; i++) {
-			exception[i] = additionalLines[i + exceptionLine];
-		}
-		return exception;
-	}
-
-	/**
-	 * Construct a logging event from currentMap and additionalLines
-	 * (additionalLines contains multiple message lines and any exception lines)
-	 * <p>
-	 * CurrentMap and additionalLines are cleared in the process
-	 * 
-	 * @return event
-	 */
-	@SuppressWarnings("unchecked")
-	private LoggingEvent buildEvent(ParsingContext ctx) {
-		HashMap<String, Object> logEventParsingProperitesMap = (HashMap<String, Object>) ctx
-				.getCustomConextProperties().get(PROPERTY_LOG_EVENT_PROPERTIES);
-		if (logEventParsingProperitesMap.size() == 0) {
-			String[] additionalLines = ctx.getUnmatchedLog().toString()
-					.split("\n");
-			if (additionalLines.length > 0) {
-				for (String line : additionalLines) {
-					LOG.finest(String.format(
-							"found non-matching (file %s) line: \"%s\"",
-							ctx.getLogSource(), line));
-				}
-			}
-			ctx.getUnmatchedLog().setLength(0);
-			return null;
-		}
-		// the current map contains fields - build an event
-		int exceptionLine = getExceptionLine(ctx);
-		String[] exception = buildException(exceptionLine, ctx);
-		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
-		// messages are listed before exceptions in additional lines
-		if (additionalLines.length > 0 && exception.length > 0) {
-			logEventParsingProperitesMap.put(
-					MESSAGE,
-					buildMessage(
-							(String) logEventParsingProperitesMap.get(MESSAGE),
-							exceptionLine, ctx));
-		}
-		DateFormat dateFormat = ctx.getDateFormat();
-		LoggingEvent event = convertToEvent(logEventParsingProperitesMap,
-				exception, dateFormat);
-
-		logEventParsingProperitesMap.clear();
-		ctx.getUnmatchedLog().setLength(0);
-		return event;
+		initializePatterns();
+		createPattern();
 	}
 
 	protected void createPattern() {
@@ -452,33 +246,15 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 	 * @param result
 	 * @return map
 	 */
-	private Map processEvent(MatchResult result) {
-		Map map = new HashMap();
+	private Map<String, String> processEvent(MatchResult result) {
+		Map<String, String> map = new HashMap<String, String>();
 		// group zero is the entire match - process all other groups
 		for (int i = 1; i < result.groupCount() + 1; i++) {
-			Object key = matchingKeywords.get(i - 1);
-			Object value = result.group(i);
+			String key = matchingKeywords.get(i - 1);
+			String value = result.group(i);
 			map.put(key, value);
-
 		}
 		return map;
-	}
-
-	/**
-	 * Helper method that will convert timestamp format to a pattern
-	 * 
-	 * 
-	 * @return string
-	 */
-	private String convertTimestamp() {
-		// some locales (for example, French) generate timestamp text with
-		// characters not included in \w -
-		// now using \S (all non-whitespace characters) instead of /w
-		String result = timestampFormat.replaceAll(
-				VALID_DATEFORMAT_CHAR_PATTERN + "+", "\\\\S+");
-		// make sure dots in timestamp are escaped
-		result = result.replaceAll(Pattern.quote("."), "\\\\.");
-		return result;
 	}
 
 	/**
@@ -528,7 +304,7 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		 * contain only one of these per entry...properties are the only
 		 * 'keyword' that can occur multiple times in an entry
 		 */
-		Iterator iter = keywords.iterator();
+		Iterator<String> iter = keywords.iterator();
 		while (iter.hasNext()) {
 			String keyword = (String) iter.next();
 			int index2 = newPattern.indexOf(keyword);
@@ -608,43 +384,6 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		}
 	}
 
-	private boolean isInteger(String value) {
-		try {
-			Integer.parseInt(value);
-			return true;
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-	}
-
-	private String quoteTimeStampChars(String input) {
-		// put single quotes around text that isn't a supported dateformat char
-		StringBuffer result = new StringBuffer();
-		// ok to default to false because we also check for index zero below
-		boolean lastCharIsDateFormat = false;
-		for (int i = 0; i < input.length(); i++) {
-			String thisVal = input.substring(i, i + 1);
-			boolean thisCharIsDateFormat = VALID_DATEFORMAT_CHARS
-					.contains(thisVal);
-			// we have encountered a non-dateformat char
-			if (!thisCharIsDateFormat && (i == 0 || lastCharIsDateFormat)) {
-				result.append("'");
-			}
-			// we have encountered a dateformat char after previously
-			// encountering a non-dateformat char
-			if (thisCharIsDateFormat && i > 0 && !lastCharIsDateFormat) {
-				result.append("'");
-			}
-			lastCharIsDateFormat = thisCharIsDateFormat;
-			result.append(thisVal);
-		}
-		// append an end single-quote if we ended with non-dateformat char
-		if (!lastCharIsDateFormat) {
-			result.append("'");
-		}
-		return result.toString();
-	}
-
 	private String singleReplace(String inputString, String oldString,
 			String newString) {
 		int propLength = oldString.length();
@@ -712,8 +451,8 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 	 * 
 	 * @return logging event
 	 */
-	private LoggingEvent convertToEvent(Map fieldMap, String[] exception,
-			DateFormat dateFormat) {
+	private LoggingEvent convertToEvent(Map<String, Object> fieldMap,
+			String[] exception, DateFormat dateFormat) {
 		if (fieldMap == null) {
 			return null;
 		}
@@ -736,7 +475,6 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		String methodName = null;
 		String eventFileName = null;
 		String lineNumber = null;
-		Hashtable properties = new Hashtable();
 
 		logger = Logger.getLogger((String) fieldMap.remove(LOGGER));
 
@@ -782,23 +520,11 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		}
 
 		threadName = (String) fieldMap.remove(THREAD);
-
 		ndc = (String) fieldMap.remove(NDC);
-
 		className = (String) fieldMap.remove(CLASS);
-
 		methodName = (String) fieldMap.remove(METHOD);
-
 		eventFileName = (String) fieldMap.remove(FILE);
-
 		lineNumber = (String) fieldMap.remove(LINE);
-
-		// properties.put(Constants.HOSTNAME_KEY, host);
-		// properties.put(Constants.APPLICATION_KEY, path);
-		// properties.put(Constants.RECEIVER_NAME_KEY, getName());
-
-		// all remaining entries in fieldmap are properties
-		properties.putAll(fieldMap);
 
 		LocationInfo info = null;
 
@@ -811,7 +537,7 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 		}
 		LoggingEvent event = new LoggingEvent(null, logger, timeStamp,
 				levelImpl, message, threadName, new ThrowableInformation(
-						exception), ndc, info, properties);
+						exception), ndc, info, null);
 		return event;
 	}
 
@@ -904,28 +630,6 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 	}
 
 	@Override
-	public void init(Properties properties) throws Exception {
-		logFormat = properties.getProperty(PROPERTY_PATTERN);
-		timestampFormat = properties.getProperty(PROPERTY_DATE_FORMAT);
-		customLevelDefinitions = properties.getProperty(PROPERTY_CUSTOM_LEVELS);
-		parserDescription.setDisplayName(properties.getProperty(PROPERTY_NAME,
-				"?"));
-		parserDescription.setDescription(properties.getProperty(
-				PROPERTY_DESCRIPTION, "?"));
-		parserDescription.setCharset(properties.getProperty(PROPERTY_CHARSET,
-				"UTF-8"));
-		if (timestampFormat != null) {
-			// dateFormat = new
-			// SimpleDateFormat(quoteTimeStampChars(timestampFormat));
-			timestampPatternText = convertTimestamp();
-		}
-
-		initializePatterns();
-		createPattern();
-
-	}
-
-	@Override
 	public void initParsingContext(ParsingContext parsingContext) {
 		if (timestampFormat != null) {
 			parsingContext.setDateFormat(new SimpleDateFormat(timestampFormat));
@@ -935,36 +639,226 @@ public class Log4jPatternMultilineLogParser implements MultiLineLogParser {
 
 	}
 
+	/** ============================================================= */
+	/** UTILITY METHODS */
+	/** ============================================================= */
+
+	/**
+	 * Walk the additionalLines list, looking for the EXCEPTION_PATTERN.
+	 * <p>
+	 * Return the index of the first matched line (the match may be the 1st line
+	 * of an exception)
+	 * <p>
+	 * Assumptions: <br>
+	 * - the additionalLines list may contain both message and exception lines<br>
+	 * - message lines are added to the additionalLines list and then exception
+	 * lines (all message lines occur in the list prior to all exception lines)
+	 * 
+	 * @return -1 if no exception line exists, line number otherwise
+	 */
+	private int getExceptionLine(ParsingContext ctx) {
+		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
+		for (int i = 0; i < additionalLines.length; i++) {
+			Matcher exceptionMatcher = exceptionPattern
+					.matcher(additionalLines[i]);
+			if (exceptionMatcher.matches()) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Combine all message lines occurring in the additionalLines list, adding a
+	 * newline character between each line
+	 * <p>
+	 * the event will already have a message - combine this message with the
+	 * message lines in the additionalLines list (all entries prior to the
+	 * exceptionLine index)
+	 * 
+	 * @param firstMessageLine
+	 *            primary message line
+	 * @param exceptionLine
+	 *            index of first exception line
+	 * @return message
+	 */
+	private String buildMessage(String firstMessageLine, int exceptionLine,
+			ParsingContext ctx) {
+		if (ctx.getUnmatchedLog().length() == 0) {
+			return firstMessageLine;
+		}
+		StringBuffer message = new StringBuffer();
+		if (firstMessageLine != null) {
+			message.append(firstMessageLine);
+		}
+		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
+		int linesToProcess = (exceptionLine == -1 ? additionalLines.length
+				: exceptionLine);
+
+		for (int i = 0; i < linesToProcess; i++) {
+			message.append(newLine);
+			message.append(additionalLines[i]);
+		}
+		return message.toString();
+	}
+
+	/**
+	 * Combine all exception lines occurring in the additionalLines list into a
+	 * String array
+	 * <p>
+	 * (all entries equal to or greater than the exceptionLine index)
+	 * 
+	 * @param exceptionLine
+	 *            index of first exception line
+	 * @return exception
+	 */
+	private String[] buildException(int exceptionLine, ParsingContext ctx) {
+		if (exceptionLine == -1) {
+			return emptyException;
+		}
+		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
+		String[] exception = new String[additionalLines.length - exceptionLine
+				- 1];
+		for (int i = 0; i < exception.length; i++) {
+			exception[i] = additionalLines[i + exceptionLine];
+		}
+		return exception;
+	}
+
+	/**
+	 * Construct a logging event from currentMap and additionalLines
+	 * (additionalLines contains multiple message lines and any exception lines)
+	 * <p>
+	 * CurrentMap and additionalLines are cleared in the process
+	 * 
+	 * @return event
+	 */
+	private LoggingEvent buildEvent(ParsingContext ctx) {
+		HashMap<String, Object> logEventParsingProperitesMap = (HashMap<String, Object>) ctx
+				.getCustomConextProperties().get(PROPERTY_LOG_EVENT_PROPERTIES);
+		if (logEventParsingProperitesMap.size() == 0) {
+			String[] additionalLines = ctx.getUnmatchedLog().toString()
+					.split("\n");
+			if (additionalLines.length > 0) {
+				for (String line : additionalLines) {
+					LOG.finest(String.format(
+							"found non-matching (file %s) line: \"%s\"",
+							ctx.getLogSource(), line));
+				}
+			}
+			ctx.getUnmatchedLog().setLength(0);
+			return null;
+		}
+		// the current map contains fields - build an event
+		int exceptionLine = getExceptionLine(ctx);
+		String[] exception = buildException(exceptionLine, ctx);
+		String[] additionalLines = ctx.getUnmatchedLog().toString().split("\n");
+		// messages are listed before exceptions in additional lines
+		if (additionalLines.length > 0 && exception.length > 0) {
+			logEventParsingProperitesMap.put(
+					MESSAGE,
+					buildMessage(
+							(String) logEventParsingProperitesMap.get(MESSAGE),
+							exceptionLine, ctx));
+		}
+		DateFormat dateFormat = ctx.getDateFormat();
+		LoggingEvent event = convertToEvent(logEventParsingProperitesMap,
+				exception, dateFormat);
+
+		logEventParsingProperitesMap.clear();
+		ctx.getUnmatchedLog().setLength(0);
+		return event;
+	}
+
+	/** ============================================================= */
+	/** GETTER/SETTER METHODS */
+	/** ============================================================= */
+
 	@Override
 	public int getVersion() {
 		return LOG_PARSER_VERSION_1;
 	}
 
-	public static void main(String[] args) throws Exception {
-		InputStream in = new FileInputStream(new File(
-				"./files/demoLogs/log4j/selenium.log"));
-		System.out.println("Available: " + in.available());
-		Properties p = new Properties();
-		// TIMESTAMP LEVEL [THREAD] CLASS (FILE:LINE) - MESSAGE
-		// %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%t] %m%n
-		p.setProperty(PROPERTY_PATTERN,
-				"TIMESTAMP LEVEL [THREAD] CLASS - MESSAGE");
-		p.setProperty(PROPERTY_DATE_FORMAT, "HH:mm:ss.SSS");
-		Log4jPatternMultilineLogParser parser = new Log4jPatternMultilineLogParser();
+	/**
+	 * If the log file contains non-log4j level strings, they can be mapped to
+	 * log4j levels using the format (android example):
+	 * V=TRACE,D=DEBUG,I=INFO,W=WARN,E=ERROR,F=FATAL,S=OFF
+	 * 
+	 * @param customLevelDefinitions
+	 *            the level definition string
+	 */
+	public void setCustomLevelDefinitions(String customLevelDefinitions) {
+		this.customLevelDefinitions = customLevelDefinitions;
+	}
 
-		LogRecordCollector collector = new ProxyLogDataCollector();
-		ParsingContext context = new ParsingContext();
-		LogImporterUsingParser importerUsingParser = new LogImporterUsingParser(
-				parser);
-		importerUsingParser.init(p);
-		importerUsingParser.initParsingContext(context);
-		importerUsingParser.importLogs(in, collector, context);
-		LogRecord[] logDatas = collector.getLogRecords();
-		System.out.println("Have: " + logDatas.length);
-		for (LogRecord logData : logDatas) {
-			System.out.println("logData: " + logData.getId() + "|"
-					+ logData.getDate() + "|" + logData.getLevel() + "|\""
-					+ logData.getMessage() + "\"");
+	public String getCustomLevelDefinitions() {
+		return customLevelDefinitions;
+	}
+
+	/**
+	 * Get Log format.
+	 * 
+	 * @return log format
+	 */
+	public String getLogFormat() {
+		return logFormat;
+	}
+
+	/**
+	 * Sets the log format.
+	 * 
+	 * @param logFormat
+	 *            the format
+	 */
+	public void setLogFormat(String logFormat) {
+		this.logFormat = logFormat;
+	}
+
+	/**
+	 * Sets a pattern from {@link java.text.SimpleDateFormat}
+	 * 
+	 * @param timestampFormat
+	 */
+	public void setTimestampFormat(String timestampFormat) {
+		this.timestampFormat = timestampFormat;
+	}
+
+	/**
+	 * Gets timestamp format.
+	 * 
+	 * @return timestamp format
+	 */
+	public String getTimestampFormat() {
+		return timestampFormat;
+	}
+
+	/** ============================================================= */
+	/** HELPER METHODS */
+	/** ============================================================= */
+
+	/**
+	 * Helper method that will convert timestamp format to a pattern
+	 * 
+	 * 
+	 * @return string
+	 */
+	private String convertTimestamp() {
+		// some locales (for example, French) generate timestamp text with
+		// characters not included in \w -
+		// now using \S (all non-whitespace characters) instead of /w
+		String result = timestampFormat.replaceAll(
+				VALID_DATEFORMAT_CHAR_PATTERN + "+", "\\\\S+");
+		// make sure dots in timestamp are escaped
+		result = result.replaceAll(Pattern.quote("."), "\\\\.");
+		return result;
+	}
+
+	private boolean isInteger(String value) {
+		try {
+			Integer.parseInt(value);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
 		}
 	}
 

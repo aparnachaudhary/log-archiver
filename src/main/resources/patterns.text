@@ -1,0 +1,14 @@
+initProperties.setProperty(PROPERTY_TYPE, "log4j");
+initProperties.setProperty(PROPERTY_PATTERN,
+		"TIMESTAMP LEVEL [THREAD] MESSAGE");
+initProperties.setProperty(PROPERTY_DATE_FORMAT,
+		"yyyy-MM-dd HH:mm:ss,SSS");
+initProperties.setProperty(PROPERTY_NAME,
+		"Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n");
+
+// %d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n
+// p.setProperty(PROPERTY_PATTERN,
+// "TIMESTAMP LEVEL [CLASS] (THREAD) MESSAGE");
+// p.setProperty(PROPERTY_DATE_FORMAT, "HH:mm:ss,SSS");
+// p.setProperty(PROPERTY_NAME,
+// "Lo4j-pattern: %d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n");
