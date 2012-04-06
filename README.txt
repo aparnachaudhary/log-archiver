@@ -12,3 +12,4 @@ DONE!
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
 
+Drop log files in folder data.

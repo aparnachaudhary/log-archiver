@@ -9,6 +9,7 @@ import net.arunoday.logstore.domain.LogRecord;
 import net.arunoday.logstore.parser.ParsingContext;
 import net.arunoday.logstore.repository.LogRecordRepository;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogProcessor {
 
+	private static final Logger logger = Logger.getLogger(LogProcessor.class);
+
 	@Autowired
 	LogRecordRepository logRecordRepository;
-
 	@Autowired
 	LogImporterUsingParser logImporterUsingParser;
 
@@ -31,7 +33,7 @@ public class LogProcessor {
 	 * @throws Exception
 	 */
 	public File process(File file) throws Exception {
-		System.err.println("File Data: " + file.getName());
+		logger.info("Parsing File: " + file.getName());
 		try {
 			LogRecord[] logRecords = collectLogRecords(file);
 
@@ -42,7 +44,9 @@ public class LogProcessor {
 			logRecordRepository.findAll();
 			// logRecordRepository.dropCollection();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Failed to parse log file", e);
+			throw new RuntimeException("Failed to parse log file", e);
+
 		}
 		return file;
 	}
