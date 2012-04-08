@@ -14,6 +14,10 @@
 
 	<context:component-scan base-package="net.arunoday.logstore" />
 
+	<!-- ================================================================= -->
+	<!-- ===== Spring Integration Setup for Polling Log Files ===== -->
+	<!-- ================================================================= -->
+
 	<!-- File Poller component -->
 	<file:inbound-channel-adapter id="filesIn"
 		directory="file:data" prevent-duplicates="true" auto-startup="true"
@@ -33,7 +37,7 @@
 
 
 	<!-- ===================================================== -->
-	<!-- PARSER SETUP -->
+	<!-- ===== PARSER SETUP ======= -->
 	<!-- ===================================================== -->
 	<bean id="log4jPatternMultilineLogParser"
 		class="net.arunoday.logstore.parser.log4j.Log4jPatternMultilineLogParser">
@@ -42,24 +46,14 @@
 	</bean>
 
 	<bean id="parserDescription" class="net.arunoday.logstore.parser.ParserDescription">
-		<property name="displayName" value="Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n" />
-		<property name="description" value="SOMETHING" />
+		<property name="displayName" value="Lo4j-pattern: %d{ISO8601} %-5p 
+			[%t] %m%n" />
+		<property name="description" value="LOG4J PARSING" />
 		<property name="charset" value="UTF-8" />
 	</bean>
 
-	<bean id="parsingProperties" class="java.util.Properties">
-		<constructor-arg>
-			<props>
-				<prop key="name">Lo4j-pattern: %d{ISO8601} %-5p [%t] %m%n</prop>
-				<prop key="pattern">TIMESTAMP LEVEL [THREAD] MESSAGE</prop>
-				<prop key="dateFormat">yyyy-MM-dd HH:mm:ss,SSS</prop>
-				<prop key="type">log4j</prop>
-			</props>
-		</constructor-arg>
-	</bean>
-
 	<!-- ===================================================== -->
-	<!-- MONGODB SETUP -->
+	<!-- ===== MONGODB SETUP ===== -->
 	<!-- ===================================================== -->
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongo" ref="mongo" />

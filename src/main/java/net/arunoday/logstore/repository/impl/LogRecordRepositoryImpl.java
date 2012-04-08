@@ -73,7 +73,7 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 
 	@Override
 	public LogRecord findOne(String id) {
-		return mongoOperations.findOne(new Query(where("id").is(id)),
+		return mongoOperations.findOne(new Query(where("_id").is(id)),
 				LogRecord.class);
 	}
 
@@ -82,7 +82,7 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 		Assert.notNull(id, "The given id must not be null!");
 		String collectionName = getCollectionName();
 
-		return mongoOperations.findOne(new Query(where("id").is(id)),
+		return mongoOperations.findOne(new Query(where("_id").is(id)),
 				Object.class, collectionName) != null;
 	}
 
@@ -101,7 +101,7 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 	@Override
 	public void delete(String id) {
 		Assert.notNull(id, "The given id must not be null!");
-		mongoOperations.remove(new Query(where("id").is(id)), LogRecord.class);
+		mongoOperations.remove(new Query(where("_id").is(id)), LogRecord.class);
 	}
 
 	@Override

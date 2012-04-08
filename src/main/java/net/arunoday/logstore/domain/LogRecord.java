@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
+ * MongoDB Document for LogRecord. 
  * 
  * @author Aparna Chaudhary
  */
