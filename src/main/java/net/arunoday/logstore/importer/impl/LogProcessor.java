@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * @author Aparna Chaudhary
  * 
  */
-@Component
+@Component("logProcessor")
 public class LogProcessor {
 
 	private static final Logger logger = Logger.getLogger(LogProcessor.class);

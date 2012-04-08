@@ -116,7 +116,6 @@ public class LogRecordRepositoryImpl implements LogRecordRepository {
 		for (LogRecord entity : entities) {
 			delete(entity);
 		}
-
 	}
 
 	@Override

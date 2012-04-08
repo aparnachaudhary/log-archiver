@@ -1,4 +1,4 @@
-package net.arunoday;
+package net.arunoday.logstore;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

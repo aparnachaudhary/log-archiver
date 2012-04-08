@@ -9,9 +9,6 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.List;
 
-import net.arunoday.data.mongodb.domain.Account;
-import net.arunoday.data.mongodb.domain.Person;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

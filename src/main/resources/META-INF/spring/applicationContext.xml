@@ -14,23 +14,23 @@
 
 	<context:component-scan base-package="net.arunoday.logstore" />
 
+	<!-- File Poller component -->
 	<file:inbound-channel-adapter id="filesIn"
 		directory="file:data" prevent-duplicates="true" auto-startup="true"
-		channel="fileChannel" filename-pattern="logfile_small.log">
-		<integration:poller fixed-rate="10" />
+		channel="fileChannel" filename-pattern="*.log">
+		<integration:poller fixed-rate="10"
+			max-messages-per-poll="1" />
 	</file:inbound-channel-adapter>
 
-	<integration:service-activator id="logProcessor"
-		input-channel="fileChannel" output-channel="logger">
-		<bean class="net.arunoday.logstore.importer.impl.LogProcessor">
-			<!-- <property name="type" value="log4j"/> <property name="name" value="Lo4j-pattern: 
-				%d{ISO8601} %-5p [%t] %m%n"/> <property name="pattern" value="TIMESTAMP LEVEL 
-				[THREAD] MESSAGE"/> <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss,SSS"/> -->
-		</bean>
+	<!-- Service activator to process the file -->
+	<integration:service-activator id="logParser"
+		input-channel="fileChannel" output-channel="moveFile" ref="logProcessor">
 	</integration:service-activator>
 
-	<integration:logging-channel-adapter
-		id="logger" level="DEBUG" log-full-message="true" />
+	<!-- Moves the file to different folder to prevent from duplicate processing -->
+	<file:outbound-channel-adapter id="moveFile"
+		directory="file:data/processed" delete-source-files="true" />
+
 
 	<!-- ===================================================== -->
 	<!-- PARSER SETUP -->
@@ -57,21 +57,14 @@
 			</props>
 		</constructor-arg>
 	</bean>
-	<!-- <bean id="parsingProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
-		<property name="properties"> <props> <prop key="name">${hibernate.dialect}</prop> 
-		<prop key="pattern">${hibernate.query.substitutions}</prop> <prop key="dateFormat">${hibernate.show_sql}</prop> 
-		<prop key="type">${hibernate.cglib.use_refl}</prop> </props> </property> 
-		</bean> -->
 
 	<!-- ===================================================== -->
 	<!-- MONGODB SETUP -->
-	<!-- Default bean name is 'mongo' -->
 	<!-- ===================================================== -->
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongo" ref="mongo" />
 		<constructor-arg name="databaseName" value="test" />
 	</bean>
-
 
 	<!-- Factory bean that creates the Mongo instance -->
 	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">

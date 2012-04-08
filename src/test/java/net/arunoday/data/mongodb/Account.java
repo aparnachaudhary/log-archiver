@@ -1,4 +1,4 @@
-package net.arunoday.data.mongodb.domain;
+package net.arunoday.data.mongodb;
 
 public class Account {
 

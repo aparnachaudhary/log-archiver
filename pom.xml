@@ -120,11 +120,6 @@
 			<version>${spring.integration.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.collections</groupId>
-			<artifactId>google-collections</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
@@ -160,7 +155,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.1.1</version>
 				<configuration>
-					<mainClass>net.arunoday.data.mongodb.App</mainClass>
+					<mainClass>net.arunoday.logstore.App</mainClass>
 				</configuration>
 			</plugin>
 			<!-- IDE -->
@@ -188,15 +183,6 @@
 						<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
 						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
 					</additionalProjectnatures>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-idea-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<dependenciesAsLibraries>true</dependenciesAsLibraries>
 				</configuration>
 			</plugin>
 		</plugins>

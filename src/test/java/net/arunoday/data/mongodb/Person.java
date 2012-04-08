@@ -1,4 +1,4 @@
-package net.arunoday.data.mongodb.domain;
+package net.arunoday.data.mongodb;
 
 import java.util.ArrayList;
 import java.util.List;
